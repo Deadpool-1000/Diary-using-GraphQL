@@ -1,0 +1,8 @@
+#import User from "User.graphql"
+#import Post from "Post.graphql"
+type Query {
+    users:[User]!,
+    userWithPosts:User
+}
+
+

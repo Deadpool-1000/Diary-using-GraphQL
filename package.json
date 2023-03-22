@@ -2,8 +2,12 @@
   "name": "diary",
   "version": "1.0.0",
   "description": "An e-diary app which is a digital platform that allows users to keep a personal journal or diary on their electronic device, such as a smartphone or tablet. The app offers a range of features, including password protection, and easy access at any time.",
+  "type": "module",
   "main": "index.js",
   "dependencies": {
+    "@apollo/server": "^4.5.0",
+    "@graphql-tools/graphql-file-loader": "7.5.16",
+    "@graphql-tools/load": "7.8.13",
     "accepts": "^1.3.8",
     "array-flatten": "^1.1.1",
     "async-retry": "^1.3.3",
@@ -84,7 +88,6 @@
     "whatwg-mimetype": "^3.0.0",
     "whatwg-url": "^5.0.0"
   },
-  "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

@@ -1,5 +1,6 @@
 #import Post from "Post.graphql"
 type User{
+    id:ID!,
     username: String,
     password: String,
     email: String,

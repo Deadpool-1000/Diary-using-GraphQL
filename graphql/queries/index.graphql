@@ -2,7 +2,12 @@
 #import Post from "Post.graphql"
 type Query {
     users:[User]!,
-    userWithPosts:User
+    usersById(id:ID!):User,
+    post:[Post]!
+}
+
+type Mutation {
+    addUser(username:String!,password:String!,email:String!,fullName:String!):User
 }
 
 

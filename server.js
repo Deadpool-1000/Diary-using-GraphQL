@@ -2,32 +2,27 @@ import { ApolloServer } from "@apollo/server";
 import { startStandaloneServer } from "@apollo/server/standalone";
 import { loadSchema } from "@graphql-tools/load";
 import { GraphQLFileLoader } from "@graphql-tools/graphql-file-loader";
-import { users,posts } from "./db/falseDB.js";
+import mergedResolvers from './graphql/resolvers/index.js';
+import "./mongoose/conn.js"
+
+
 const typeDefs = await loadSchema('./graphql/queries/index.graphql',{
   loaders:[new GraphQLFileLoader()]
 });
-const resolvers = {
-  Query: {
-    users: () => users,
-  },
-  User:{
-    posts:(user)=>{
-      posts.filter(post=>{
-        post.id
-      });
-    }
-  }
-};
+
 
 const server = new ApolloServer({
   typeDefs,
-  resolvers,
+  resolvers:mergedResolvers
 });
 
 const { url } = await startStandaloneServer(server, {
   listen: {
     port: 4000,
   },
+  context: ({req,res})=>{
+    const token = req.headers.authorization || 'Nothing'
+  }
 });
 
 console.log(`🚀 server listening at: ${url}`);

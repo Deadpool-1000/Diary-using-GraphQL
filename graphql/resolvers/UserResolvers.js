@@ -1,6 +1,5 @@
 import { users, posts } from "../../db/falseDB.js";
 import { User } from "../../mongoose/models/User.js";
-import bcrypt from "bcrypt";
 export default {
   Query: {
     users: async () => {
@@ -9,18 +8,36 @@ export default {
     usersById: async (parent, args, contextValue, info) => {
       return await User.findById(args.id);
     },
+    protect:(parent, args, contextValue, info)=>{
+      if(contextValue.user){
+        console.log("Success");
+      } else {
+        console.log("Unsuccess");
+      }
+      return "Done"
+    }
   },
   Mutation: {
     addUser: async (parent, args, contextValue, info) => {
       try {
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(args.password, salt);
-        const newUser = new User({ ...args, password: hashedPassword });
+        const newUser = new User({ ...args });
         return await newUser.save();
       } catch (error) {
         console.log(error);
       }
     },
+    login: async (parent, {username,password}, contextValue, info) => {
+      try {
+        const foundUser = await User.findByCredentials(username, password);
+        const token = await foundUser.generateAuthToken();
+        return {
+          user: foundUser,
+          token,
+        };
+      } catch (error) {
+        console.log(error);
+      }
+    }
   },
   User: {
     posts: (user) => {

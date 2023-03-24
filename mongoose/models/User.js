@@ -1,4 +1,6 @@
 import mongoose from "mongoose";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 const userSchema = new mongoose.Schema(
   {
     username: {
@@ -17,43 +19,46 @@ const userSchema = new mongoose.Schema(
       required: true,
     },
     posts: [mongoose.Schema.Types.ObjectId],
+    tokens: [
+      {
+        token: {
+          type: String,
+          required: true,
+        },
+      },
+    ],
   },
   {
     timestamps: true,
   }
 );
 
-
 userSchema.methods.generateAuthToken = async function () {
-  //Called on instance called instance methods
-  const token = jwt.sign({ _id: this._id.toString()},process.env.SECRET);
+  const token = jwt.sign({ _id: this._id.toString() }, process.env.SECRET);
   this.tokens = this.tokens.concat({ token });
   await this.save();
   return token;
 };
 
-
 userSchema.statics.findByCredentials = async (username, password) => {
-  //these are called on models Sometimes called model methods
   const user = await User.findOne({ username });
+  console.log(user);
 
   if (!user) throw new Error("Unable to login");
 
   const isMatch = await bcrypt.compare(password, user.password);
+  console.log(isMatch);
   if (!isMatch) throw new Error("Unable to login");
 
   return user;
 };
 
-
 userSchema.pre("save", async function (next) {
   if (this.isModified("password")) {
-    const salt = await bcrypt.genSalt(10);
-    this.password = await bcrypt.hash(this.password, salt);
+    this.password = await bcrypt.hash(this.password, 8);
   }
   next();
 });
-
 
 userSchema.pre("remove", async function (next) {
   await Task.deleteMany({ owner: this._id });

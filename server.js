@@ -3,7 +3,10 @@ import { startStandaloneServer } from "@apollo/server/standalone";
 import { loadSchema } from "@graphql-tools/load";
 import { GraphQLFileLoader } from "@graphql-tools/graphql-file-loader";
 import mergedResolvers from './graphql/resolvers/index.js';
-import "./mongoose/conn.js"
+import "./mongoose/conn.js";
+import auth from './middleware/auth.js'
+import * as dotenv from "dotenv"
+dotenv.config()
 
 
 const typeDefs = await loadSchema('./graphql/queries/index.graphql',{
@@ -20,9 +23,7 @@ const { url } = await startStandaloneServer(server, {
   listen: {
     port: 4000,
   },
-  context: ({req,res})=>{
-    const token = req.headers.authorization || 'Nothing'
-  }
+  context: auth
 });
 
 console.log(`🚀 server listening at: ${url}`);

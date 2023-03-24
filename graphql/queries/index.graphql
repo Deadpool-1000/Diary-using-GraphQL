@@ -1,13 +1,22 @@
 #import User from "User.graphql"
 #import Post from "Post.graphql"
+
+type AuthPayload {
+    user:User,
+    token:String
+}
+
+
 type Query {
     users:[User]!,
     usersById(id:ID!):User,
-    post:[Post]!
+    post:[Post]!,
+    protect:String!
 }
 
 type Mutation {
-    addUser(username:String!,password:String!,email:String!,fullName:String!):User
+    addUser(username:String!,password:String!,email:String!,fullName:String!):User,
+    login(username:String!,password:String!):AuthPayload
 }
 
 

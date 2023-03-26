@@ -10,13 +10,15 @@ type AuthPayload {
 type Query {
     users:[User]!,
     usersById(id:ID!):User,
-    post:[Post]!,
-    protect:String!
+    posts(id:ID!):[Post]
 }
 
 type Mutation {
     addUser(username:String!,password:String!,email:String!,fullName:String!):User,
-    login(username:String!,password:String!):AuthPayload
+    login(username:String!,password:String!):AuthPayload,
+    addPost(title:String!,description:String!):Post,
+    deletePost(id:ID!):Post,
+    logout:String
 }
 
 

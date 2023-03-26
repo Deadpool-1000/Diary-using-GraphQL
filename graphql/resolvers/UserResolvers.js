@@ -1,5 +1,6 @@
 import { users, posts } from "../../db/falseDB.js";
 import { User } from "../../mongoose/models/User.js";
+import {Post} from "../../mongoose/models/Post.js";
 export default {
   Query: {
     users: async () => {
@@ -7,14 +8,6 @@ export default {
     },
     usersById: async (parent, args, contextValue, info) => {
       return await User.findById(args.id);
-    },
-    protect:(parent, args, contextValue, info)=>{
-      if(contextValue.user){
-        console.log("Success");
-      } else {
-        console.log("Unsuccess");
-      }
-      return "Done"
     }
   },
   Mutation: {
@@ -23,7 +16,7 @@ export default {
         const newUser = new User({ ...args });
         return await newUser.save();
       } catch (error) {
-        console.log(error);
+        return null;
       }
     },
     login: async (parent, {username,password}, contextValue, info) => {
@@ -35,15 +28,29 @@ export default {
           token,
         };
       } catch (error) {
-        console.log(error);
+        return null;
       }
     },
+    logout:async (parent, args, contextValue, info)=>{
+      const token = contextValue.token;
+      try {
+        const foundUser = await User.findById(contextValue.user.id);
+        if(!foundUser){
+          return "Unauthorized"
+        }
+        foundUser.tokens=foundUser.tokens.filter((tk) => {
+          return tk.token !== token;
+        });
+        await foundUser.save();
+        return "Success";
+      } catch (error) {
+          return "Unauthorized"
+      }
+    }
   },
   User: {
-    posts: (user) => {
-      return posts.filter((post) => {
-        return post.creator === user.id;
-      });
+    posts: async (user) => {
+      return await Post.find({creator:user.id})
     },
-  },
+  }
 };

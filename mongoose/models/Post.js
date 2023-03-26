@@ -8,6 +8,9 @@ const postSchema = new mongoose.Schema({
   content: {
     type: String,
   },
+  creator : {
+    type:mongoose.Schema.Types.ObjectId
+  }
 });
 
-export const Post = new mongoose.Model(postSchema);
+export const Post = new mongoose.model("Post",postSchema);

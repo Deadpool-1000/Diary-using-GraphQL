@@ -6,7 +6,7 @@ export default {
     users: async () => {
       return await User.find({});
     },
-    usersById: async (parent, args, contextValue, info) => {
+    profile: async (parent, args, contextValue, info) => {
       return await User.findById(args.id);
     }
   },
@@ -46,7 +46,8 @@ export default {
       } catch (error) {
           return "Unauthorized"
       }
-    }
+    },
+    
   },
   User: {
     posts: async (user) => {

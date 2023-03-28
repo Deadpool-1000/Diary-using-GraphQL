@@ -23,7 +23,7 @@ const { url } = await startStandaloneServer(server, {
   },
   context: async ({ req, res }) => {
     try {
-      const token = req.headers.authorization || "Some token";
+      const token = req.headers.authorization || "";
       const user = await auth(token);
       return { user,token };
     } catch (e) {

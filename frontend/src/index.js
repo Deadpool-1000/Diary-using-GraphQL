@@ -1,25 +1,27 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
+import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
+import { AuthContextProvider } from "./store/auth-context";
 import App from "./App";
-import { ChakraProvider } from "@chakra-ui/react";
-import Bar from "./components/nav/Bar";
-import Login from './pages/Login/Login';
-import Compose from "./pages/Compose/Compose";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter } from "react-router-dom";
+import Bar from "./components/Bar";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
+const client = new ApolloClient({
+  uri: 'http://localhost:4000',
+  cache: new InMemoryCache(),
+});
 root.render(
   <React.StrictMode>
-    <ChakraProvider>
+    <ApolloProvider client={client}>
+      <AuthContextProvider>
       <BrowserRouter>
-        <Bar/>
-        <Routes>
-            <Route path="/" element={<App/>}/>
-            <Route path="/login" element={<Login/>}/>
-            <Route path="/compose" element={<Compose/>}/>
-        </Routes>
-      </BrowserRouter>
-    </ChakraProvider>
+      <Bar />
+        <App/>
+        </BrowserRouter>
+      </AuthContextProvider>
+    </ApolloProvider>
   </React.StrictMode>
 );

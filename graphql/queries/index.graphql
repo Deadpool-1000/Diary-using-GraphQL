@@ -3,7 +3,8 @@
 
 type AuthPayload {
     user:User,
-    token:String
+    token:String,
+    expiresIn:Int
 }
 
 

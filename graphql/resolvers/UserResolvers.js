@@ -23,11 +23,18 @@ export default {
       try {
         const foundUser = await User.findByCredentials(username, password);
         const token = await foundUser.generateAuthToken();
+        // contextValue.res.cookie("token", token, {
+        //   httpOnly: true,
+        //   secure: true,
+        //   expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
+        // });
         return {
           user: foundUser,
           token,
+          expiresIn:7*24*60*60
         };
       } catch (error) {
+        console.log(error);
         return null;
       }
     },

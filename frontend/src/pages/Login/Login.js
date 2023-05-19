@@ -1,113 +1,78 @@
-import { useState } from "react";
-import {
-  Flex,
-  Heading,
-  Input,
-  Button,
-  InputGroup,
-  Stack,
-  InputLeftElement,
-  chakra,
-  Box,
-  Link,
-  Avatar,
-  FormControl,
-  FormHelperText,
-  InputRightElement,
-} from "@chakra-ui/react";
-import { FaLock } from "react-icons/fa";
-import { HiUserCircle } from "react-icons/hi";
-import { IconContext } from "react-icons";
+import React, { useContext, useReducer, useState } from "react";
+import { useRef } from "react";
+import { gql, useMutation } from '@apollo/client';
+import { useNavigate } from "react-router-dom";
+import AuthContext from "../../store/auth-context";
+import ModalComponent from "../../components/modal/ModalComponent";
 
-const CFaUserAlt = chakra(HiUserCircle);
-const CFaLock = chakra(FaLock);
 
-const App = () => {
-  const [showPassword, setShowPassword] = useState(false);
+const LOGIN_USER = gql`
+    mutation Login($username: String!, $password: String!){
+      login(username: $username, password: $password) { 
+        user {
+          username
+        }, 
+        token,
+        expiresIn
+      }
+    }
+`;
 
-  const handleShowClick = () => setShowPassword(!showPassword);
+function reducer(state,action){
+  switch(action.type){
+    case "LOGIN_SUCCESS":
+      return {
+        title:"Sucess!",
+        message:`You were logged in successfully 😃,${action.username}`
+      }
+  }
+}
 
-  return (
-    <IconContext.Provider
-      value={{ color: "#90CDF4", className: "global-class-name" }}
-    >
-      <Flex
-        flexDirection="column"
-        width="100wh"
-        height="100vh"
-        backgroundColor="#EBF8FF"
-        justifyContent="center"
-        alignItems="center"
-      >
-        <Stack
-          flexDir="column"
-          mb="2"
-          justifyContent="center"
-          alignItems="center"
-        >
-          <Avatar bg="#2C5282" />
-          <Heading color="#2B6CB0">Welcome</Heading>
-          <Box minW={{ base: "90%", md: "468px" }}>
-            <form>
-              <Stack
-                spacing={4}
-                p="1rem"
-                backgroundColor="whiteAlpha.900"
-                boxShadow="md"
-              >
-                <FormControl>
-                  <InputGroup>
-                    <InputLeftElement
-                      pointerEvents="none"
-                      children={<CFaUserAlt color="gray.300" />}
-                    />
-                    <Input type="email" placeholder="email address" />
-                  </InputGroup>
-                </FormControl>
-                <FormControl>
-                  <InputGroup>
-                    <InputLeftElement
-                      pointerEvents="none"
-                      color="gray.300"
-                      children={<CFaLock color="gray.300" />}
-                    />
-                    <Input
-                      type={showPassword ? "text" : "password"}
-                      placeholder="Password"
-                    />
-                    <InputRightElement width="4.5rem">
-                      <Button h="1.75rem" size="sm" onClick={handleShowClick}>
-                        {showPassword ? "Hide" : "Show"}
-                      </Button>
-                    </InputRightElement>
-                  </InputGroup>
-                  <FormHelperText textAlign="right">
-                    <Link>forgot password?</Link>
-                  </FormHelperText>
-                </FormControl>
-                <Button
-                  borderRadius={0}
-                  type="submit"
-                  variant="solid"
-                  colorScheme="blue"
-                  backgroundColor="#63B3ED"
-                  width="full"
-                >
-                  Login
-                </Button>
-              </Stack>
-            </form>
-          </Box>
-        </Stack>
-        <Box>
-          New to us?{" "}
-          <Link color="teal.500" href="#">
-            Sign Up
-          </Link>
-        </Box>
-      </Flex>
-    </IconContext.Provider>
-  );
-};
+function Login() {
+  const usernameRef = useRef();
+  const passwordRef = useRef();
+  const navigate = useNavigate();
+  const authCtx = useContext(AuthContext);
+  const [login, { loading }]=useMutation(LOGIN_USER);
+  const [showModal,setShowModal]=useState(false);
+  const [ modalContent, dispatch ]=useReducer(reducer,{title:"",message:""})
+  function closeHandler(){
+    setShowModal(false);
+    navigate('/diary')
+  }
 
-export default App;
+  async function submitHandler(e) {
+    e.preventDefault();
+    const username = usernameRef.current.value;
+    const password = passwordRef.current.value;
+    const response = await login({variables:{username,password}});
+    
+    //calculating expiration time and getting token from response
+    const token = response.data.login.token;
+    const expiresIn = response.data.login.expiresIn;
+    const expTime = new Date(new Date().getTime() + +expiresIn * 1000);
+    
+    //Local Storage
+    authCtx.login(token,expTime)
+
+    //set-up Modal
+    dispatch({type:"LOGIN_SUCCESS",username:response.data.login.user.username})
+    setShowModal(true);
+  }
+
+
+  return <form onSubmit={submitHandler}>
+    <ModalComponent show={showModal} handleClose={closeHandler} title={modalContent.title} body={modalContent.message} />
+    <div>
+      <label htmlFor="username">Username</label><br />
+      <input type="text" id="username" ref={usernameRef} />
+    </div>
+    <div>
+      <label htmlFor="password">Password</label><br />
+      <input type="text" id="password" ref={passwordRef} />
+    </div>
+    <button type="submit">{loading?"Submitting...":"Login"}</button>
+  </form>
+}
+
+export default Login;

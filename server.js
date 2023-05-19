@@ -22,6 +22,9 @@ const { url } = await startStandaloneServer(server, {
     port: 4000,
   },
   context: async ({ req, res }) => {
+    if(req.body.operationName=='Login'){
+      return;
+    }
     try {
       const token = req.headers.authorization || "";
       const user = await auth(token);

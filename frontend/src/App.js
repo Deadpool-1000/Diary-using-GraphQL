@@ -9,7 +9,6 @@ import AuthContext from "./store/auth-context";
 function App() {
   const authCtx = useContext(AuthContext)
   return (
-    
       <Routes>
         <Route path="/" element={<Home/>} />
         <Route path="/diary" element={authCtx.isLoggedIn ? <Diary /> : <Navigate to="/" replace="true" />} />

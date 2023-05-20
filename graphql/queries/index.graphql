@@ -11,7 +11,7 @@ type AuthPayload {
 type Query {
     users:[User]!,
     profile(id:ID!):User,
-    posts(id:ID!):[Post]
+    posts:[Post]
 }
 
 type Mutation {

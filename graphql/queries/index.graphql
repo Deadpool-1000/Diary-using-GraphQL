@@ -6,12 +6,15 @@ type AuthPayload {
     token:String,
     expiresIn:Int
 }
-
+type Post_with_tz {
+    post:Post!,
+    createdAt:String!
+}
 
 type Query {
     users:[User]!,
     profile(id:ID!):User,
-    posts:[Post]
+    posts:[Post_with_tz]
 }
 
 type Mutation {

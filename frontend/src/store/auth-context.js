@@ -40,6 +40,7 @@ export function AuthContextProvider(props){
     function logoutHandler(){
         setToken(null);
         localStorage.removeItem('token');
+        localStorage.removeItem('expTime');
         if(logoutTimer){
             clearTimeout(logoutTimer);
         }

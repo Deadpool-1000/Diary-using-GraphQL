@@ -6,6 +6,7 @@ import Home from "./pages/Home/Home"
 import { Routes, Route, Navigate } from "react-router-dom";
 import Signup from "./pages/Signup/Signup";
 import AuthContext from "./store/auth-context";
+import Logout from './pages/Logout/Logout'
 function App() {
   const authCtx = useContext(AuthContext)
   return (
@@ -15,9 +16,9 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/compose" element={authCtx.isLoggedIn ? <Compose /> : <Navigate to="/" replace="true" />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path='/logout' element={authCtx.isLoggedIn ? <Logout/>: <Navigate to="/" replace="true" />}/>
         <Route path="/*" element={<App />} />
       </Routes>
-    
   );
 }
 

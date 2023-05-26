@@ -15,6 +15,9 @@ const postSchema = new mongoose.Schema({
   creator : {
     type:mongoose.Schema.Types.ObjectId
   }
+},
+{
+  timestamps: true,
 });
 
 export const Post = new mongoose.model("Post",postSchema);

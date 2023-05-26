@@ -6,6 +6,9 @@
   "main": "index.js",
   "dependencies": {
     "@apollo/server": "^4.5.0",
+    "@fortawesome/fontawesome-svg-core": "^6.4.0",
+    "@fortawesome/free-solid-svg-icons": "^6.4.0",
+    "@fortawesome/react-fontawesome": "^0.2.0",
     "@graphql-tools/graphql-file-loader": "7.5.16",
     "@graphql-tools/load": "7.8.13",
     "@graphql-tools/merge": "^8.4.0",
@@ -58,6 +61,7 @@
     "mime": "^1.6.0",
     "mime-db": "^1.52.0",
     "mime-types": "^2.1.35",
+    "moment": "^2.29.4",
     "mongoose": "^7.0.2",
     "ms": "^2.0.0",
     "negotiator": "^0.6.3",

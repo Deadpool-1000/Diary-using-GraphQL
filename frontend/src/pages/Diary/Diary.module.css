@@ -1,0 +1,17 @@
+.icon{
+    margin-left: 84%;
+    width:45px;
+    height: 45px;
+    cursor: pointer;
+}
+.bodyContainer{
+    margin-bottom: 60px;
+}
+
+.spinner{
+    position: absolute;
+    left:50%;
+    top:50%;
+    height: 200px;
+    width: 200px;
+}

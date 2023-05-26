@@ -1,2 +1,3 @@
 import mongoose from "mongoose";
-mongoose.connect("/Your mongodb uri here", { useNewUrlParser: true, useUnifiedTopology: true });
+console.log(process.env);
+mongoose.connect(process.env.APOLLO_MONGOOSE_URI, { useNewUrlParser: true, useUnifiedTopology: true });

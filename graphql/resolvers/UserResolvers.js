@@ -1,6 +1,5 @@
-import { users, posts } from "../../db/falseDB.js";
 import { User } from "../../mongoose/models/User.js";
-import {Post} from "../../mongoose/models/Post.js";
+import { Post } from "../../mongoose/models/Post.js";
 export default {
   Query: {
     users: async () => {
@@ -16,49 +15,48 @@ export default {
         const newUser = new User({ ...args });
         return await newUser.save();
       } catch (error) {
-        return null;
+       throw new error("There was an error saving the user")
       }
     },
-    login: async (parent, {username,password}, contextValue, info) => {
+    login: async (parent, { username, password }, contextValue, info) => {
       try {
+        //Static method returns user by email and password
         const foundUser = await User.findByCredentials(username, password);
+        //Schema-methods that returns a token from "this" user's id
         const token = await foundUser.generateAuthToken();
-        // contextValue.res.cookie("token", token, {
-        //   httpOnly: true,
-        //   secure: true,
-        //   expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
-        // });
         return {
           user: foundUser,
           token,
-          expiresIn:7*24*60*60
+          expiresIn: parseInt(process.env.EXPIRES_IN)
         };
       } catch (error) {
-        console.log(error);
-        return null;
+        throw new Error(error.message)
       }
     },
-    logout:async (parent, args, contextValue, info)=>{
-      const token = contextValue.token;
-      try {
-        const foundUser = await User.findById(contextValue.user.id);
-        if(!foundUser){
-          return "Unauthorized"
+    logout: async (parent, args, contextValue, info) => {
+      if (contextValue.isLoggedIn) {
+        const token = contextValue.token;
+        try {
+          const foundUser = await User.findById(contextValue.user.id);
+          if (!foundUser) {
+            return "Unauthorized"
+          }
+          foundUser.tokens = foundUser.tokens.filter((tk) => {
+            return tk.token !== token;
+          });
+          await foundUser.save();
+          return "Success";
+        } catch (error) {
+          throw new error("Could'nt logout");
         }
-        foundUser.tokens=foundUser.tokens.filter((tk) => {
-          return tk.token !== token;
-        });
-        await foundUser.save();
-        return "Success";
-      } catch (error) {
-          return "Unauthorized"
+      } else {
+        throw new Error("Please Authenticate yourself!");
       }
-    },
-    
+    }
   },
   User: {
     posts: async (user) => {
-      return await Post.find({creator:user.id})
+      return await Post.find({ creator: user.id })
     },
   }
 };
